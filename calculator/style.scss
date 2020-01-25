@@ -38,11 +38,17 @@
   grid-area: display;
   text-align: right;
   border: 2px solid purple;
-  font-size: 22px;
-  padding: 10px;
+  font-size: 30px;
+  padding: 10px 10px 0px 10px;
   font-family: 'Orbitron', sans-serif;
   color: orange;
   background-color: black;
+  min-height: 80px;
+}
+#expr{
+  font-size: 14px;
+  margin-bottom: -1px;
+  color: white;
 }
 #one{
   grid-area: one;

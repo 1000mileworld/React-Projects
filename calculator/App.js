@@ -1,18 +1,15 @@
 endsWithOperator = /[x+‑/]$/;
 
-function handleOp(op){
-  //a = Number(a);
-  //b = Number(b);
-  
+function handleOp(op){ 
   switch(op){
     case 'add':
-      return '+';
+      return ' + ';
     case 'subtract':
-      return '-';
+      return ' - ';
     case 'multiply':
-      return '*';
+      return ' * ';
     case 'divide':
-      return '/';
+      return ' / ';
   }
 }
 class App extends React.Component{
@@ -21,12 +18,20 @@ class App extends React.Component{
     this.state = {
       input: 0,
       first: true, //if input is the first number entered
-      expression: ''
+      expression: '',
+      isDecimal: false,
+      justSolved: false
     }
     this.handleClick = this.handleClick.bind(this);
   }
   handleClick(e){
     const id = e.target.id;
+    if(this.state.justSolved){
+      this.setState({
+        expression: '',
+        justSolved: false
+      })
+    }
     switch(id){
       case 'one':
       case 'two':
@@ -38,23 +43,31 @@ class App extends React.Component{
       case 'eight':
       case 'nine':
       case 'zero':
-        
+        const val = e.target.textContent
         if(this.state.first){
-          this.setState({
-            first: false,
-            input: e.target.textContent
-          })
+          if(id!='zero'){
+            this.setState({
+              first: false,
+              input: val
+            })
+          }
         }else{
           this.setState({
-            input: this.state.input + e.target.textContent   
+            input: this.state.input + val   
           })
         }
+        
+        this.setState(state => ({
+          expression: state.expression + val 
+        }))
+        
         break;
       case 'clear':
         this.setState({
           input: 0,
           first: true,
-          expression: ''
+          expression: '',
+          isDecimal: false
         })
         break;
       case 'add':
@@ -63,7 +76,7 @@ class App extends React.Component{
       case 'multiply':
         this.setState(state => ({
           first: true,
-          expression: state.expression + state.input
+          isDecimal: false
         }), () => { //callback because setState is async
           if(endsWithOperator.test(this.state.expression)){
             this.setState(state => ({
@@ -76,23 +89,52 @@ class App extends React.Component{
           }
         })        
         break;
+      
       case 'equals':
         this.setState(state => ({
           first: true,
-          expression: state.expression + state.input
+          isDecimal: false,
+          input: eval(state.expression),
+          justSolved: true
         }), () => {
           this.setState(state => ({
-            input: eval(state.expression),
-            expression: ''
+            expression: state.expression + ' = ' + state.input
           }))
         })
         break;
+      
+      case 'decimal':
+        /*
+        if(!this.state.isDecimal){
+          if(endsWithOperator.test(this.state.expression)){
+            this.setState(state => ({
+              expression: state.expression + '0.',
+              input: '0.',
+              first: false
+            }), ()=>{console.log(this.state.expression)})
+          }else{
+            this.setState(state => ({
+              expression: state.expression + state.input + '.',
+              input: state.input + '.'
+            }), ()=>{console.log(this.state.expression)})
+          }
+          this.setState({
+            isDecimal: true
+          })
+        }
+        */
+        break;
+      default:
+        console.log('Error in handle click case statement.');
     }
   }
   render(){
     return(
       <div className="grid-container">
-          <div id="display">{this.state.input}</div>
+        <div id="display">
+          <p id='expr'>{this.state.expression}</p>
+          {this.state.input}
+        </div>
         
           <div id="clear" className="btn" onClick={this.handleClick}>AC</div>
           <div id="divide" className="btn operations" onClick={this.handleClick}>/</div>
@@ -112,7 +154,7 @@ class App extends React.Component{
             <div id="two" className="btn mainPad" onClick={this.handleClick}>2</div>
             <div id="three" className="btn mainPad" onClick={this.handleClick}>3</div>
             <div id="zero" className="btn mainPad" onClick={this.handleClick}>0</div>
-            <div id="decimal" className="btn mainPad">.</div>
+            <div id="decimal" className="btn mainPad" onClick={this.handleClick}>.</div>
             <div id="equals" className="btn" onClick={this.handleClick}>=</div>
         </div>
       

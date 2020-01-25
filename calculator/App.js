@@ -1,5 +1,5 @@
-const endsWithOperator = /[*+‑/]$/;
-const beginsWithOperator = /^[*+-/]/;
+const endsWithOperator = /[/*\-+]$/; //escape minus character
+const beginsWithOperator = /^[*+/]/;
 
 function handleOp(op){ 
   switch(op){
@@ -93,7 +93,7 @@ class App extends React.Component{
         break;
       
       case 'equals':
-        if(!beginsWithOperator.test(this.state.expression)){
+        if(!beginsWithOperator.test(this.state.expression) && !endsWithOperator.test(this.state.expression)){
           this.setState(state => ({
             first: true,
             isDecimal: false,
@@ -109,25 +109,25 @@ class App extends React.Component{
         break;
       
       case 'decimal':
-        /*
+        
         if(!this.state.isDecimal){
           if(endsWithOperator.test(this.state.expression)){
             this.setState(state => ({
               expression: state.expression + '0.',
               input: '0.',
               first: false
-            }), ()=>{console.log(this.state.expression)})
+            }))
           }else{
             this.setState(state => ({
-              expression: state.expression + state.input + '.',
+              expression: state.expression + '.',
               input: state.input + '.'
-            }), ()=>{console.log(this.state.expression)})
+            }))
           }
           this.setState({
             isDecimal: true
           })
         }
-        */
+        
         break;
       default:
         console.log('Error in handle click case statement.');

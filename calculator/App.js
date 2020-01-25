@@ -1,17 +1,19 @@
-endsWithOperator = /[x+‑/]$/;
+const endsWithOperator = /[*+‑/]$/;
+const beginsWithOperator = /^[*+-/]/;
 
 function handleOp(op){ 
   switch(op){
     case 'add':
-      return ' + ';
+      return '+';
     case 'subtract':
-      return ' - ';
+      return '-';
     case 'multiply':
-      return ' * ';
+      return '*';
     case 'divide':
-      return ' / ';
+      return '/';
   }
 }
+
 class App extends React.Component{
   constructor(props){
     super(props)
@@ -20,7 +22,7 @@ class App extends React.Component{
       first: true, //if input is the first number entered
       expression: '',
       isDecimal: false,
-      justSolved: false
+      justSolved: true
     }
     this.handleClick = this.handleClick.bind(this);
   }
@@ -91,16 +93,19 @@ class App extends React.Component{
         break;
       
       case 'equals':
-        this.setState(state => ({
-          first: true,
-          isDecimal: false,
-          input: eval(state.expression),
-          justSolved: true
-        }), () => {
+        if(!beginsWithOperator.test(this.state.expression)){
           this.setState(state => ({
-            expression: state.expression + ' = ' + state.input
-          }))
-        })
+            first: true,
+            isDecimal: false,
+            input: eval(state.expression),
+            justSolved: true
+          }), () => {
+            this.setState(state => ({
+              expression: state.expression + ' = ' + state.input
+            }))
+          })
+        }
+        
         break;
       
       case 'decimal':
@@ -131,14 +136,14 @@ class App extends React.Component{
   render(){
     return(
       <div className="grid-container">
-        <div id="display">
+        <div id="all">
           <p id='expr'>{this.state.expression}</p>
-          {this.state.input}
+          <span id="display">{this.state.input}</span>
         </div>
         
           <div id="clear" className="btn" onClick={this.handleClick}>AC</div>
           <div id="divide" className="btn operations" onClick={this.handleClick}>/</div>
-          <div id="multiply" className="btn operations" onClick={this.handleClick}>*</div>
+          <div id="multiply" className="btn operations" onClick={this.handleClick}>x</div>
        
           <div id="seven" className="btn mainPad" onClick={this.handleClick}>7</div>
           <div id="eight" className="btn mainPad" onClick={this.handleClick}>8</div>

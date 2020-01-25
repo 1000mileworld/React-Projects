@@ -1,16 +1,18 @@
-function handleOp(a, b, op){
-  a = Number(a);
-  b = Number(b);
+endsWithOperator = /[x+‑/]$/;
+
+function handleOp(op){
+  //a = Number(a);
+  //b = Number(b);
   
   switch(op){
     case 'add':
-      return a+b;
+      return '+';
     case 'subtract':
-      return a-b;
+      return '-';
     case 'multiply':
-      return a*b;
+      return '*';
     case 'divide':
-      return a/b;
+      return '/';
   }
 }
 class App extends React.Component{
@@ -19,8 +21,7 @@ class App extends React.Component{
     this.state = {
       input: 0,
       first: true, //if input is the first number entered
-      answer: 0,
-      operation: null //+,-,/,*
+      expression: ''
     }
     this.handleClick = this.handleClick.bind(this);
   }
@@ -37,6 +38,7 @@ class App extends React.Component{
       case 'eight':
       case 'nine':
       case 'zero':
+        
         if(this.state.first){
           this.setState({
             first: false,
@@ -52,23 +54,37 @@ class App extends React.Component{
         this.setState({
           input: 0,
           first: true,
-          answer: 0
+          expression: ''
         })
         break;
       case 'add':
       case 'subtract':
       case 'divide':
       case 'multiply':
-        this.setState({
-          operation: id,
+        this.setState(state => ({
           first: true,
-          answer: this.state.input
-        })
+          expression: state.expression + state.input
+        }), () => { //callback because setState is async
+          if(endsWithOperator.test(this.state.expression)){
+            this.setState(state => ({
+              expression: state.expression.replace(endsWithOperator,handleOp(id))
+            }))
+          }else{
+            this.setState(state => ({
+              expression: state.expression + handleOp(id)
+            }))
+          }
+        })        
         break;
       case 'equals':
-        this.setState({
+        this.setState(state => ({
           first: true,
-          input: handleOp(this.state.answer,this.state.input,this.state.operation)
+          expression: state.expression + state.input
+        }), () => {
+          this.setState(state => ({
+            input: eval(state.expression),
+            expression: ''
+          }))
         })
         break;
     }
@@ -80,7 +96,7 @@ class App extends React.Component{
         
           <div id="clear" className="btn" onClick={this.handleClick}>AC</div>
           <div id="divide" className="btn operations" onClick={this.handleClick}>/</div>
-          <div id="multiply" className="btn operations" onClick={this.handleClick}>x</div>
+          <div id="multiply" className="btn operations" onClick={this.handleClick}>*</div>
        
           <div id="seven" className="btn mainPad" onClick={this.handleClick}>7</div>
           <div id="eight" className="btn mainPad" onClick={this.handleClick}>8</div>

@@ -13,7 +13,13 @@ function handleOp(op){
       return '/';
   }
 }
-
+/*Have trouble keeping precision
+function fixNum(str){
+  let num = parseFloat(str);
+  num = num.toFixed(9);
+  return num.toString();
+}
+*/
 class App extends React.Component{
   constructor(props){
     super(props)

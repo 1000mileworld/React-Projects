@@ -81,15 +81,35 @@ class App extends React.Component{
           isDecimal: false
         }), () => { //callback because setState is async
           if(endsWithOperator.test(this.state.expression)){
-            this.setState(state => ({
-              expression: state.expression.replace(endsWithOperator,handleOp(id))
-            }))
+            if(id=='subtract' &&  !/[-]$/.test(this.state.expression)){
+              this.setState(state => ({
+                expression: state.expression + handleOp(id)
+              }))
+            }else if(id!='subtract' && /[/*\-+][/*\-+]$/.test(this.state.expression)){
+               this.setState(state => ({
+                 expression: state.expression.replace(/[/*\-+][/*\-+]$/,handleOp(id))
+               }))      
+            }else{
+              this.setState(state => ({
+                expression: state.expression.replace(endsWithOperator,handleOp(id))
+              }))
+            }      
+              
           }else{
             this.setState(state => ({
               expression: state.expression + handleOp(id)
             }))
           }
-        })        
+        })
+        /*Logic:
+        •If last char is an operator:
+            o	If current char is a minus sign and last char is not minus:
+              	Add operator to expression
+            o	Else If current char is not minus and last two char are operators:
+              	Replace last two operators
+            o	Else: replace last operator
+         •Else: add operator to expression
+        */
         break;
       
       case 'equals':

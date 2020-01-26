@@ -28,7 +28,7 @@ class App extends React.Component{
       first: true, //if input is the first number entered
       expression: '',
       isDecimal: false,
-      justSolved: true
+      justSolved: false
     }
     this.handleClick = this.handleClick.bind(this);
   }
@@ -36,8 +36,7 @@ class App extends React.Component{
     const id = e.target.id;
     if(this.state.justSolved){
       this.setState({
-        expression: '',
-        justSolved: false
+        expression: ''
       })
     }
     switch(id){
@@ -75,7 +74,8 @@ class App extends React.Component{
           input: 0,
           first: true,
           expression: '',
-          isDecimal: false
+          isDecimal: false,
+          justSolved: false
         })
         break;
       case 'add':
@@ -86,28 +86,35 @@ class App extends React.Component{
           first: true,
           isDecimal: false
         }), () => { //callback because setState is async
-          if(endsWithOperator.test(this.state.expression)){
-            if(id=='subtract' &&  !/[-]$/.test(this.state.expression)){
+          if(!this.state.justSolved){
+            if(endsWithOperator.test(this.state.expression)){
+              if(id=='subtract' &&  !/[-]$/.test(this.state.expression)){
+                this.setState(state => ({
+                  expression: state.expression + handleOp(id)
+                }))
+              }else if(id!='subtract' && /[/*\-+][/*\-+]$/.test(this.state.expression)){
+                 this.setState(state => ({
+                   expression: state.expression.replace(/[/*\-+][/*\-+]$/,handleOp(id))
+                 }))      
+              }else{
+                this.setState(state => ({
+                  expression: state.expression.replace(endsWithOperator,handleOp(id))
+                }))
+              }      
+
+            }else{
               this.setState(state => ({
                 expression: state.expression + handleOp(id)
               }))
-            }else if(id!='subtract' && /[/*\-+][/*\-+]$/.test(this.state.expression)){
-               this.setState(state => ({
-                 expression: state.expression.replace(/[/*\-+][/*\-+]$/,handleOp(id))
-               }))      
-            }else{
-              this.setState(state => ({
-                expression: state.expression.replace(endsWithOperator,handleOp(id))
-              }))
-            }      
-              
+            }
           }else{
             this.setState(state => ({
-              expression: state.expression + handleOp(id)
+              justSolved: false,
+              expression: state.input + handleOp(id)
             }))
           }
         })
-        /*Logic:
+        /*Logic for operators:
         •If last char is an operator:
             o	If current char is a minus sign and last char is not minus:
               	Add operator to expression

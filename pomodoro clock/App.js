@@ -48,17 +48,25 @@ class App extends React.Component{
     }
   }
   sessionDec(){
-    if(this.state.session>1){
+    if(this.state.session>1 && this.state.isPaused){
       this.setState(state => ({
         session: state.session-1
-      }))
+      }), () => {
+        this.setState(state => ({
+          timeLeft: displayTimeLeft(state.session*60)
+        }))
+      })
     }
   }
   sessionInc(){
-    if(this.state.session<60){
+    if(this.state.session<60 && this.state.isPaused){
       this.setState(state => ({
         session: state.session+1
-      }))
+      }), () => {
+        this.setState(state => ({
+          timeLeft: displayTimeLeft(state.session*60)
+        }))
+      })
     }
   }
   controlTimer(){

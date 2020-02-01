@@ -6,6 +6,10 @@ function displayTimeLeft(seconds) {
   const display = `${minutes < 10 ? '0' : '' }${minutes}:${remainderSeconds < 10 ? '0' : '' }${remainderSeconds}`;
   return display;
 }
+function convertNum(num){
+  const prefix = num < 10 ? '0' : '';
+  return prefix + num + ':00';
+}
 
 class App extends React.Component{
   constructor(props){
@@ -14,7 +18,8 @@ class App extends React.Component{
       break: 5,
       session: 25,
       timeLeft: '25:00',
-      isPaused: true
+      isPaused: true,
+      type: 'Session'
     }
     this.reset = this.reset.bind(this);
     this.breakDec = this.breakDec.bind(this);
@@ -23,14 +28,16 @@ class App extends React.Component{
     this.sessionInc = this.sessionInc.bind(this);
     this.controlTimer = this.controlTimer.bind(this);
     this.runTimer = this.runTimer.bind(this);
-  }  
+    this.handleChange = this.handleChange.bind(this);
+  }
   reset(){
     clearInterval(countdown);
     this.setState({
       break: 5,
       session: 25,
       timeLeft: '25:00',
-      isPaused: true
+      isPaused: true,
+      type: 'Session'
     })
   }
   breakDec(){
@@ -100,6 +107,30 @@ class App extends React.Component{
     }, 1000);
     
   }
+  handleChange(){
+    if(this.state.timeLeft==='00:00'){
+      setTimeout(()=>{ //need to delay 1 second to pass test
+        if(this.state.type==='Session'){ 
+              this.setState(state => ({
+                type: 'Break',
+                timeLeft: convertNum(state.break)
+              }), ()=>{
+                this.runTimer();
+              })
+            }else{
+              this.setState(state => ({
+                type: 'Session',
+                timeLeft: convertNum(state.session)
+              }), ()=>{
+                this.runTimer();
+              })
+            }
+      }, 1000)
+    }
+  }
+  componentDidUpdate() {
+    this.handleChange();
+  }
   render(){
     return(
       <div className="container-fluid">
@@ -120,8 +151,8 @@ class App extends React.Component{
           <button id="session-increment" onClick={this.sessionInc}>+</button></div>           
           </div>
         </div>
-        <h2 id="timer-label">Session</h2>
-        <div id="time-left"> {this.state.timeLeft}</div>
+        <h2 id="timer-label">{this.state.type}</h2>
+        <div id="time-left">{this.state.timeLeft}</div>
         <button id="start_stop" onClick={this.controlTimer}><i className="fa fa-play fa-2x"/>
             <i className="fa fa-pause fa-2x"/></button>
         <button id="reset" onClick={this.reset}><i className="fa fa-refresh fa-2x"/></button>

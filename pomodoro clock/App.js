@@ -39,6 +39,9 @@ class App extends React.Component{
       isPaused: true,
       type: 'Session'
     })
+    const audio = document.getElementById('beep');
+    audio.pause();
+    audio.currentTime = 0;
   }
   breakDec(){
     if(this.state.break>1){
@@ -109,6 +112,9 @@ class App extends React.Component{
   }
   handleChange(){
     if(this.state.timeLeft==='00:00'){
+      const audio = document.getElementById('beep');
+      audio.play();
+      
       setTimeout(()=>{ //need to delay 1 second to pass test
         if(this.state.type==='Session'){ 
               this.setState(state => ({
@@ -156,6 +162,7 @@ class App extends React.Component{
         <button id="start_stop" onClick={this.controlTimer}><i className="fa fa-play fa-2x"/>
             <i className="fa fa-pause fa-2x"/></button>
         <button id="reset" onClick={this.reset}><i className="fa fa-refresh fa-2x"/></button>
+        <audio id="beep" src="https://goo.gl/65cBl1"></audio>
       </div>
     )
   }
